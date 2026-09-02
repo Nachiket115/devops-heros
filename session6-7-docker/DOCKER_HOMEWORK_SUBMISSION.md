@@ -4,7 +4,7 @@
 
 ## 👤 Student Details
 
-* **Name:** Nachiket R
+* **Name:** Nachiketas Iyer
 * **Enrollment Number:** 24bcs10131
 * **Repository:** [devops-heros](https://github.com/Nachiket115/devops-heros)
 * **Branch:** `session6-docker`

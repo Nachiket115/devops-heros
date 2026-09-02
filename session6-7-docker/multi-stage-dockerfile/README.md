@@ -1,8 +1,8 @@
 # Docker Multi-Stage Build Application
 
 ## 👤 Student Details
-* **Name:** Nachiket R
-* **Enrollment Number:** [Enter Your Enrollment Number Here]
+* **Name:** Nachiketas Iyer
+* **Enrollment Number:** 24bcs10131
 
 ---
 
