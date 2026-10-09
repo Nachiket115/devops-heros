@@ -51,6 +51,8 @@ mini-project/
 ├── deployment.yaml      # 2 replicas, probes, volume mounts, resource limits
 ├── service.yaml         # ClusterIP service exposing port 80
 ├── hpa.yaml             # Autoscaler (min: 2, max: 5, target: 50% CPU)
+├── load-generator.yaml  # BusyBox Pod used to trigger HPA scaling
+├── screenshots/         # Terminal screenshots for submission evidence
 └── README.md            # This documentation and assignment guide
 ```
 
@@ -107,6 +109,36 @@ Expected output:
 ```text
 NAME          REFERENCE            TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
 web-app-hpa   Deployment/web-app   0%/50%    2         5         2          30s
+```
+
+### Step 5.5: Verify All Resources
+```bash
+kubectl get all,pvc -n production-webapp
+```
+
+Captured output:
+
+![Mini project resources](screenshots/mini-project-resources.svg)
+
+Actual cluster output:
+
+```text
+NAME                          READY   STATUS    RESTARTS   AGE
+pod/load-generator            1/1     Running   0          80s
+pod/web-app-d45775485-ch2dw   1/1     Running   0          80s
+pod/web-app-d45775485-dbxsv   1/1     Running   0          80s
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/web-service   ClusterIP   10.103.202.113   <none>        80/TCP    80s
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web-app   2/2     2            2           80s
+
+NAME                                              REFERENCE            TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/web-app-hpa   Deployment/web-app   cpu: 30%/50%   2         5         2          80s
+
+NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS
+persistentvolumeclaim/web-data   Bound    pvc-45b1abed-9558-467e-93f4-64b5223aee88   500Mi      RWO            standard
 ```
 
 ---
@@ -170,10 +202,7 @@ Expected output:
 ### Task 3: Trigger HPA Elastic Scaling
 In a separate terminal, launch a load generator to simulate traffic spike:
 ```bash
-kubectl run load-generator -n production-webapp \
-  --image=busybox:1.36 \
-  --restart=Never \
-  -- /bin/sh -c "while true; do wget -q -O- http://web-service; done"
+kubectl apply -f load-generator.yaml
 ```
 
 Watch the autoscaler scale out:
@@ -187,6 +216,38 @@ web-app-hpa   Deployment/web-app   0%/50%     2         5         2          1m
 web-app-hpa   Deployment/web-app   110%/50%   2         5         2          2m
 web-app-hpa   Deployment/web-app   95%/50%    2         5         4          3m
 web-app-hpa   Deployment/web-app   45%/50%    2         5         5          4m
+```
+
+Captured output:
+
+![Mini project HPA scale out](screenshots/mini-project-hpa-scale.svg)
+
+Actual metrics output:
+
+```text
+NAME                      CPU(cores)   MEMORY(bytes)
+load-generator            547m         4Mi
+web-app-d45775485-ch2dw   30m          7Mi
+web-app-d45775485-dbxsv   27m          7Mi
+```
+
+The load generator produced traffic successfully. In this run, the workload reached `30%/50%`, so HPA stayed at the configured minimum of 2 replicas. The HPA was working and reading CPU metrics, but the current CPU was below the scale-out threshold.
+
+HPA describe output:
+
+```text
+Name:                                                  web-app-hpa
+Namespace:                                             production-webapp
+Reference:                                             Deployment/web-app
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  30% (30m) / 50%
+Min replicas:                                          2
+Max replicas:                                          5
+Deployment pods:                                       2 current / 2 desired
+Conditions:
+  AbleToScale     True    ScaleDownStabilized
+  ScalingActive   True    ValidMetricFound
+  ScalingLimited  False   DesiredWithinRange
 ```
 
 Stop load and watch scale down:
@@ -217,7 +278,7 @@ kubectl get hpa -n production-webapp -w
 ### Issue 2: HPA displays `TARGETS: <unknown>/50%`
 - **Check**: `kubectl top pods -n production-webapp`
 - **Root Cause**: Either Metrics Server is disabled or the container spec lacks `resources.requests.cpu`.
-- **Fix**: Enable metrics addon (`minikube addons enable metrics-server`) and ensure `cpu: 100m` request is defined.
+- **Fix**: Enable metrics addon (`minikube addons enable metrics-server`), wait for the Metrics API to warm up, and ensure `cpu: 100m` request is defined.
 
 ### Issue 3: CrashLoopBackOff on Application Pods
 - **Check**: `kubectl describe pod <pod-name> -n production-webapp`

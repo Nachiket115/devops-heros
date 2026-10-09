@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="300" viewBox="0 0 1180 300">
+  <rect width="1180" height="300" rx="18" fill="#111827"/>
+  <rect x="0" y="0" width="1180" height="42" rx="18" fill="#1f2937"/>
+  <circle cx="28" cy="21" r="7" fill="#ef4444"/>
+  <circle cx="52" cy="21" r="7" fill="#f59e0b"/>
+  <circle cx="76" cy="21" r="7" fill="#22c55e"/>
+  <text x="102" y="27" fill="#d1d5db" font-family="Menlo, Consolas, monospace" font-size="15">session13-hpa - CPU metrics</text>
+  <text x="28" y="86" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl apply -f load-generator.yaml</text>
+  <text x="28" y="116" fill="#e5e7eb" font-family="Menlo, Consolas, monospace" font-size="19">pod/load-generator created</text>
+  <text x="28" y="154" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl top pods</text>
+  <text x="28" y="188" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">NAME                        CPU(cores)   MEMORY(bytes)</text>
+  <text x="28" y="218" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo-5d6676989b-6dpm8   42m          7Mi</text>
+  <text x="28" y="248" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo-5d6676989b-wpl2n   58m          7Mi</text>
+  <text x="28" y="278" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">load-generator              819m         5Mi</text>
+</svg>

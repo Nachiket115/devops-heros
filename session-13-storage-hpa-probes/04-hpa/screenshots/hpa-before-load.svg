@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="360" viewBox="0 0 1180 360">
+  <rect width="1180" height="360" rx="18" fill="#111827"/>
+  <rect x="0" y="0" width="1180" height="42" rx="18" fill="#1f2937"/>
+  <circle cx="28" cy="21" r="7" fill="#ef4444"/>
+  <circle cx="52" cy="21" r="7" fill="#f59e0b"/>
+  <circle cx="76" cy="21" r="7" fill="#22c55e"/>
+  <text x="102" y="27" fill="#d1d5db" font-family="Menlo, Consolas, monospace" font-size="15">session13-hpa - kubectl get hpa</text>
+  <text x="28" y="82" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl apply -f deployment.yaml</text>
+  <text x="28" y="112" fill="#e5e7eb" font-family="Menlo, Consolas, monospace" font-size="19">deployment.apps/hpa-demo created</text>
+  <text x="28" y="148" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl apply -f service.yaml</text>
+  <text x="28" y="178" fill="#e5e7eb" font-family="Menlo, Consolas, monospace" font-size="19">service/hpa-demo-service created</text>
+  <text x="28" y="214" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl apply -f hpa.yml</text>
+  <text x="28" y="244" fill="#e5e7eb" font-family="Menlo, Consolas, monospace" font-size="19">horizontalpodautoscaler.autoscaling/hpa-demo created</text>
+  <text x="28" y="280" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl get hpa</text>
+  <text x="28" y="312" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">NAME       REFERENCE             TARGETS              MINPODS   MAXPODS   REPLICAS   AGE</text>
+  <text x="28" y="340" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo   Deployment/hpa-demo   cpu: &lt;unknown&gt;/50%   1         5         1          9s</text>
+</svg>

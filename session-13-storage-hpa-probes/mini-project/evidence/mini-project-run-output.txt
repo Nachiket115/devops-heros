@@ -1,0 +1,58 @@
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f namespace.yaml
+namespace/production-webapp created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f pvc.yaml
+persistentvolumeclaim/web-data created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f deployment.yaml
+deployment.apps/web-app created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f service.yaml
+service/web-service created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f hpa.yaml
+horizontalpodautoscaler.autoscaling/web-app-hpa created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl apply -f load-generator.yaml
+pod/load-generator created
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl get all,pvc -n production-webapp
+NAME                          READY   STATUS    RESTARTS   AGE
+pod/load-generator            1/1     Running   0          80s
+pod/web-app-d45775485-ch2dw   1/1     Running   0          80s
+pod/web-app-d45775485-dbxsv   1/1     Running   0          80s
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/web-service   ClusterIP   10.103.202.113   <none>        80/TCP    80s
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web-app   2/2     2            2           80s
+
+NAME                                DESIRED   CURRENT   READY   AGE
+replicaset.apps/web-app-d45775485   2         2         2       80s
+
+NAME                                              REFERENCE            TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/web-app-hpa   Deployment/web-app   cpu: 30%/50%   2         5         2          80s
+
+NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS
+persistentvolumeclaim/web-data   Bound    pvc-45b1abed-9558-467e-93f4-64b5223aee88   500Mi      RWO            standard
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl top pods -n production-webapp
+NAME                      CPU(cores)   MEMORY(bytes)
+load-generator            547m         4Mi
+web-app-d45775485-ch2dw   30m          7Mi
+web-app-d45775485-dbxsv   27m          7Mi
+
+nachiketr@Nachikets-Laptop-2 mini-project % kubectl describe hpa web-app-hpa -n production-webapp
+Name:                                                  web-app-hpa
+Namespace:                                             production-webapp
+Reference:                                             Deployment/web-app
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  30% (30m) / 50%
+Min replicas:                                          2
+Max replicas:                                          5
+Deployment pods:                                       2 current / 2 desired
+Conditions:
+  AbleToScale     True    ScaleDownStabilized
+  ScalingActive   True    ValidMetricFound
+  ScalingLimited  False   DesiredWithinRange

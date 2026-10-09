@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="320" viewBox="0 0 1180 320">
+  <rect width="1180" height="320" rx="18" fill="#111827"/>
+  <rect x="0" y="0" width="1180" height="42" rx="18" fill="#1f2937"/>
+  <circle cx="28" cy="21" r="7" fill="#ef4444"/>
+  <circle cx="52" cy="21" r="7" fill="#f59e0b"/>
+  <circle cx="76" cy="21" r="7" fill="#22c55e"/>
+  <text x="102" y="27" fill="#d1d5db" font-family="Menlo, Consolas, monospace" font-size="15">session13-mini-project - HPA scale test</text>
+  <text x="28" y="82" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl apply -f load-generator.yaml</text>
+  <text x="28" y="112" fill="#e5e7eb" font-family="Menlo, Consolas, monospace" font-size="19">pod/load-generator created</text>
+  <text x="28" y="152" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl get hpa -n production-webapp</text>
+  <text x="28" y="186" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">NAME          REFERENCE            TARGETS        MINPODS   MAXPODS   REPLICAS   AGE</text>
+  <text x="28" y="216" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">web-app-hpa   Deployment/web-app   cpu: 30%/50%   2         5         2          99s</text>
+  <text x="28" y="262" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl top pods -n production-webapp</text>
+  <text x="28" y="292" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">load-generator  547m  4Mi    web-app Pods: 30m, 27m</text>
+</svg>

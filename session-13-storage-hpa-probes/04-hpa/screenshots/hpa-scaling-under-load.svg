@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="410" viewBox="0 0 1180 410">
+  <rect width="1180" height="410" rx="18" fill="#111827"/>
+  <rect x="0" y="0" width="1180" height="42" rx="18" fill="#1f2937"/>
+  <circle cx="28" cy="21" r="7" fill="#ef4444"/>
+  <circle cx="52" cy="21" r="7" fill="#f59e0b"/>
+  <circle cx="76" cy="21" r="7" fill="#22c55e"/>
+  <text x="102" y="27" fill="#d1d5db" font-family="Menlo, Consolas, monospace" font-size="15">session13-hpa - scale out observed</text>
+  <text x="28" y="82" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl get hpa</text>
+  <text x="28" y="116" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE</text>
+  <text x="28" y="146" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo   Deployment/hpa-demo   cpu: 50%/50%   1         5         2          3m59s</text>
+  <text x="28" y="192" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl get pods</text>
+  <text x="28" y="226" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">NAME                        READY   STATUS    RESTARTS   AGE</text>
+  <text x="28" y="256" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo-5d6676989b-6dpm8   1/1     Running   0          104s</text>
+  <text x="28" y="286" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">hpa-demo-5d6676989b-wpl2n   1/1     Running   0          4m</text>
+  <text x="28" y="316" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">load-generator              1/1     Running   0          3m32s</text>
+</svg>

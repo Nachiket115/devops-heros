@@ -1,0 +1,55 @@
+nachiketr@Nachikets-Laptop-2 devops-heros % minikube start --driver=docker
+minikube v1.39.0 on Darwin 27.0.1 (arm64)
+Using the docker driver based on existing profile
+Preparing Kubernetes v1.37.0 on containerd 2.3.4
+Enabled addons: storage-provisioner, metrics-server, default-storageclass, dashboard
+Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
+
+nachiketr@Nachikets-Laptop-2 devops-heros % kubectl get nodes
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   36d   v1.37.0
+
+nachiketr@Nachikets-Laptop-2 devops-heros % kubectl top nodes
+NAME       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)
+minikube   185m         2%       1670Mi          21%
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl apply -f deployment.yaml
+deployment.apps/hpa-demo created
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl apply -f service.yaml
+service/hpa-demo-service created
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl apply -f hpa.yml
+horizontalpodautoscaler.autoscaling/hpa-demo created
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl apply -f load-generator.yaml
+pod/load-generator created
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl get hpa
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   cpu: 50%/50%   1         5         2          3m59s
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl get pods
+NAME                        READY   STATUS    RESTARTS   AGE
+hpa-demo-5d6676989b-6dpm8   1/1     Running   0          104s
+hpa-demo-5d6676989b-wpl2n   1/1     Running   0          4m
+load-generator              1/1     Running   0          3m32s
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl top pods
+NAME                        CPU(cores)   MEMORY(bytes)
+hpa-demo-5d6676989b-6dpm8   42m          7Mi
+hpa-demo-5d6676989b-wpl2n   58m          7Mi
+load-generator              819m         5Mi
+
+nachiketr@Nachikets-Laptop-2 04-hpa % kubectl describe hpa hpa-demo
+Name:                                                  hpa-demo
+Namespace:                                             default
+Reference:                                             Deployment/hpa-demo
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  50% (50m) / 50%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       2 current / 2 desired
+Events:
+  Warning  FailedGetResourceMetric       horizontal-pod-autoscaler  no metrics returned from resource metrics API
+  Normal   SuccessfulRescale             horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization above target

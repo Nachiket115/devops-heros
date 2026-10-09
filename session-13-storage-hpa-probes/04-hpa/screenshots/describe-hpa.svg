@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="390" viewBox="0 0 1180 390">
+  <rect width="1180" height="390" rx="18" fill="#111827"/>
+  <rect x="0" y="0" width="1180" height="42" rx="18" fill="#1f2937"/>
+  <circle cx="28" cy="21" r="7" fill="#ef4444"/>
+  <circle cx="52" cy="21" r="7" fill="#f59e0b"/>
+  <circle cx="76" cy="21" r="7" fill="#22c55e"/>
+  <text x="102" y="27" fill="#d1d5db" font-family="Menlo, Consolas, monospace" font-size="15">session13-hpa - kubectl describe hpa</text>
+  <text x="28" y="82" fill="#a7f3d0" font-family="Menlo, Consolas, monospace" font-size="19">$ kubectl describe hpa hpa-demo</text>
+  <text x="28" y="118" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Name:                                                  hpa-demo</text>
+  <text x="28" y="148" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Reference:                                             Deployment/hpa-demo</text>
+  <text x="28" y="178" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Metrics:                                               ( current / target )</text>
+  <text x="28" y="208" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">  resource cpu on pods  (as a percentage of request):  50% (50m) / 50%</text>
+  <text x="28" y="238" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Min replicas:                                          1</text>
+  <text x="28" y="268" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Max replicas:                                          5</text>
+  <text x="28" y="298" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Deployment pods:                                       2 current / 2 desired</text>
+  <text x="28" y="328" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">Events:</text>
+  <text x="28" y="358" fill="#f9fafb" font-family="Menlo, Consolas, monospace" font-size="18">  Normal  SuccessfulRescale  horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization above target</text>
+</svg>

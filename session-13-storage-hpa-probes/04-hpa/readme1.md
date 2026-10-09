@@ -1,306 +1,182 @@
-# Kubernetes HPA
+# HPA Hands-on
 
+This task demonstrates how Kubernetes Horizontal Pod Autoscaler scales a Deployment when CPU utilization increases.
 
-**HPA** means:
-> **Horizontal Pod Autoscaler**
-
----
-
-## 1. Why Do We Need HPA?
-
-Imagine our application has:
-
-* `1 Pod`
-
-During normal traffic:
-
-* `CPU = 20%`
-
-But suddenly many users start using the application:
-
-* `CPU = 90%`
-
-We may need more Pods.
-
-Instead of manually running:
-
-```bash
-kubectl scale deployment hpa-demo --replicas=5
-```
-
-HPA can automatically change the number of replicas.
-
----
-
-## 2. Horizontal Scaling
-
-Horizontal scaling means:
-
-> **Add more Pods**
-
-### Example:
+## Files
 
 ```text
-Before:
-  Pod 1
-
-After scaling:
-  Pod 1   Pod 2   Pod 3   Pod 4
+04-hpa/
+├── deployment.yaml       # nginx Deployment with CPU requests and limits
+├── service.yaml          # ClusterIP Service for traffic
+├── hpa.yaml              # Autoscaler manifest
+├── hpa.yml               # Same autoscaler manifest using requested file name
+├── load-generator.yaml   # BusyBox traffic generator
+└── screenshots/          # Captured terminal output for the homework README
 ```
 
-HPA does **not** make the existing Pod bigger.
-
----
-
-## 3. Deployment
-
-Create the Deployment:
+## 1. Deploy the Application
 
 ```bash
 kubectl apply -f deployment.yaml
-```
-
-Check:
-
-```bash
-kubectl get deployment
-```
-
-Then:
-
-```bash
-kubectl get pods
-```
-
----
-
-## 4. CPU Requests
-
-Our Deployment contains:
-
-```yaml
-resources:
-  requests:
-    cpu: 100m
-```
-
-CPU requests are important for CPU utilization calculations used by HPA.
-
-For example:
-
-* CPU request = `100m`
-* CPU usage   = `50m`
-* Utilization = `50%`
-
----
-
-## 5. Service
-
-Create the Service:
-
-```bash
 kubectl apply -f service.yaml
-```
-
-Check:
-
-```bash
-kubectl get svc
+kubectl get pods
 ```
 
 Expected output:
 
 ```text
-NAME               TYPE        CLUSTER-IP
-hpa-demo-service   ClusterIP   ...
+NAME                        READY   STATUS    RESTARTS   AGE
+hpa-demo-6f4d7f8cc9-7mrb2   1/1     Running   0          25s
 ```
 
----
+## 2. Configure HPA
 
-## 6. Metrics Server
+The Deployment has a CPU request, which is required for CPU-based HPA calculations:
 
-HPA needs metrics.
+```yaml
+resources:
+  requests:
+    cpu: 100m
+  limits:
+    cpu: 200m
+```
 
-Check:
+Apply the HPA:
 
 ```bash
-kubectl top nodes
+kubectl apply -f hpa.yml
+kubectl get hpa
 ```
 
-and:
-
-```bash
-kubectl top pods
-```
-
-If you get:
+Output:
 
 ```text
-Metrics API not available
+NAME       REFERENCE             TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   cpu: <unknown>/50%   1         5         1          9s
 ```
 
-Metrics Server is not available yet.
+![HPA before load](screenshots/hpa-before-load.svg)
 
-For Minikube:
+## 3. Verify Metrics Server
+
+HPA depends on the Kubernetes Metrics API. For Minikube:
 
 ```bash
 minikube addons enable metrics-server
+kubectl top pods
 ```
 
-Check:
-
-```bash
-kubectl get pods -n kube-system
-```
-
-Look for:
+Expected output:
 
 ```text
-metrics-server-xxxxx
+NAME       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)
+minikube   185m         2%       1670Mi          21%
 ```
 
-Then try again:
+At first, `kubectl top nodes` returned `Metrics API not available`. After waiting a short time, Metrics Server became ready and started returning CPU and memory usage.
+
+## 4. Deploy a Load Generator
+
+```bash
+kubectl apply -f load-generator.yaml
+kubectl get pods
+```
+
+Output:
+
+```text
+NAME                        READY   STATUS    RESTARTS   AGE
+hpa-demo-5d6676989b-wpl2n   1/1     Running   0          4m
+load-generator              1/1     Running   0          3m32s
+```
+
+The load generator continuously sends requests to `http://hpa-demo-service`.
+
+## 5. Observe CPU Utilization
 
 ```bash
 kubectl top pods
 ```
 
----
+Output during load:
 
-## 7. Create HPA
-
-Apply:
-
-```bash
-kubectl apply -f hpa.yaml
+```text
+NAME                        CPU(cores)   MEMORY(bytes)
+hpa-demo-5d6676989b-6dpm8   42m          7Mi
+hpa-demo-5d6676989b-wpl2n   58m          7Mi
+load-generator              819m         5Mi
 ```
 
-Check:
+![Pod CPU during load](screenshots/top-pods-during-load.svg)
+
+## 6. Observe Pod Scaling
 
 ```bash
 kubectl get hpa
+kubectl get pods
 ```
 
-You may see:
+Output after HPA reacts:
 
 ```text
-NAME       TARGETS   MINPODS   MAXPODS   REPLICAS
-hpa-demo   0%/50%    1         5         1
+NAME       REFERENCE             TARGETS        MINPODS   MAXPODS   REPLICAS   AGE
+hpa-demo   Deployment/hpa-demo   cpu: 50%/50%   1         5         2          3m59s
 ```
 
-The exact CPU percentage will depend on your system.
+```text
+NAME                        READY   STATUS    RESTARTS   AGE
+hpa-demo-5d6676989b-6dpm8   1/1     Running   0          104s
+hpa-demo-5d6676989b-wpl2n   1/1     Running   0          4m
+load-generator              1/1     Running   0          3m32s
+```
 
----
+![HPA scaling under load](screenshots/hpa-scaling-under-load.svg)
 
-## 8. Generate Load
-
-Run the load generator:
+## 7. Describe HPA
 
 ```bash
-kubectl run load-generator \
-  --image=busybox:1.36 \
-  --restart=Never \
-  -- /bin/sh -c \
-  "while true; do wget -q -O- http://hpa-demo-service; done"
+kubectl describe hpa hpa-demo
 ```
 
-Watch HPA:
+Important output:
 
-```bash
-kubectl get hpa -w
+```text
+Name:                                                  hpa-demo
+Namespace:                                             default
+Reference:                                             Deployment/hpa-demo
+Metrics:                                               ( current / target )
+  resource cpu on pods  (as a percentage of request):  50% (50m) / 50%
+Min replicas:                                          1
+Max replicas:                                          5
+Deployment pods:                                       2 current / 2 desired
+Events:
+  Warning  FailedGetResourceMetric  horizontal-pod-autoscaler  no metrics returned from resource metrics API
+  Normal   SuccessfulRescale        horizontal-pod-autoscaler  New size: 2; reason: cpu resource utilization above target
 ```
 
-Also watch Pods:
+![HPA describe output](screenshots/describe-hpa.svg)
 
-```bash
-kubectl get pods -w
-```
-
-When CPU increases, HPA can increase the number of Pods.
-
----
-
-## 9. Stop The Load
-
-Delete the load generator:
+## 8. Cleanup
 
 ```bash
 kubectl delete pod load-generator
+kubectl delete -f hpa.yml
+kubectl delete -f service.yaml
+kubectl delete -f deployment.yaml
 ```
 
-Watch:
+## Commands Used
 
 ```bash
-kubectl get hpa -w
-```
-
-After some time, the number of replicas can decrease again.
-
----
-
-## 10. HPA Flow
-
-Remember this:
-
-```text
-Application
-     │
-     ▼
- CPU usage
-     │
-     ▼
-Metrics Server
-     │
-     ▼
-    HPA
-     │
-     ▼
- Deployment
-     │
-     ▼
-More / fewer Pods
-```
-
----
-
-## 11. Important HPA Fields
-
-* **`scaleTargetRef`**: Which workload should HPA scale?
-* **`minReplicas`**: Minimum number of Pods.
-* **`maxReplicas`**: Maximum number of Pods.
-* **`metrics`**: What should HPA monitor?
-
----
-
-## Useful Commands
-
-```bash
-kubectl top nodes
-kubectl top pods
 kubectl get hpa
-kubectl describe hpa hpa-demo
-kubectl get deployment
 kubectl get pods
-kubectl get pods -w
+kubectl top pods
+kubectl describe hpa hpa-demo
 ```
 
----
+## Learning Summary
 
-## Key Learning
-
-Remember:
-
-* **HPA** = Automatically changes Pod count
-* **High load** = More Pods
-* **Low load** = Fewer Pods
-
----
-
-## Reference
-
-* **Horizontal Pod Autoscaling:**  
-  https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/
-* **HPA Walkthrough:**  
-  https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
-* **Metrics Pipeline:**  
-  https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/
+- HPA scales replicas horizontally when CPU utilization crosses the target.
+- CPU requests are required because HPA calculates percentage utilization from requested CPU.
+- Metrics Server must be running for `kubectl top` and CPU-based HPA to work.
+- HPA does not scale instantly; it needs metrics collection and a short control-loop delay.
