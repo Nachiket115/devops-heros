@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="412" viewBox="0 0 1100 412">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1100" height="412" rx="14" fill="url(#bg)" stroke="#334155" stroke-width="1.5"/>
+  <rect x="0" y="0" width="1100" height="42" rx="14" fill="#1e293b"/>
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+  <text x="90" y="26" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" font-weight="600">k8s-troubleshoot ~ Scenario 7: OOMKilled Memory Exhaustion Triage</text>
+  <text x="24" y="72" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl apply -f scenarios/scenario-5-oomkilled/broken.yaml -n k8s-troubleshoot</text>
+  <text x="24" y="96" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/fail-5-oomkilled-pod created</text>
+  <text x="24" y="120" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl get pod fail-5-oomkilled-pod -n k8s-troubleshoot</text>
+  <text x="24" y="144" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME                   READY   STATUS      RESTARTS     AGE</text>
+  <text x="24" y="168" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">fail-5-oomkilled-pod   0/1     OOMKilled   1 (3s ago)   4s</text>
+  <text x="24" y="192" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl describe pod fail-5-oomkilled-pod -n k8s-troubleshoot | grep -E 'Last State:|Reason:|Exit Code:'</text>
+  <text x="24" y="216" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">    Last State:     Terminated</text>
+  <text x="24" y="240" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">      Reason:       OOMKilled</text>
+  <text x="24" y="264" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">      Exit Code:    137</text>
+  <text x="24" y="288" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal"># Root Cause: Python memory allocator exceeded cgroup memory limit (20Mi) -&gt; Linux Kernel OOM killer invoked</text>
+  <text x="24" y="312" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal"># Fix: Set container memory limits to 256Mi and requests to 128Mi</text>
+  <text x="24" y="336" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl set resources pod fail-5-oomkilled-pod --limits=memory=256Mi --requests=memory=128Mi -n k8s-troubleshoot</text>
+  <text x="24" y="360" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/fail-5-oomkilled-pod resource limits updated</text>
+</svg>

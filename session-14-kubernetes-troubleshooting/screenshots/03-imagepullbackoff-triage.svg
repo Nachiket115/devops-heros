@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="556" viewBox="0 0 1100 556">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1100" height="556" rx="14" fill="url(#bg)" stroke="#334155" stroke-width="1.5"/>
+  <rect x="0" y="0" width="1100" height="42" rx="14" fill="#1e293b"/>
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+  <text x="90" y="26" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" font-weight="600">k8s-troubleshoot ~ Scenario 2: ImagePullBackOff / ErrImagePull Triage</text>
+  <text x="24" y="72" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl apply -f 07-imagepullbackoff/broken-pod.yaml -n k8s-troubleshoot</text>
+  <text x="24" y="96" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/image-demo created</text>
+  <text x="24" y="120" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl get pod image-demo -n k8s-troubleshoot</text>
+  <text x="24" y="144" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME         READY   STATUS             RESTARTS   AGE</text>
+  <text x="24" y="168" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">image-demo   0/1     ImagePullBackOff   0          22s</text>
+  <text x="24" y="192" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl describe pod image-demo -n k8s-troubleshoot | grep -A 4 'Events:'</text>
+  <text x="24" y="216" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">Events:</text>
+  <text x="24" y="240" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">  Type     Reason   Age   From     Message</text>
+  <text x="24" y="264" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">  ----     ------   ----  ----     -------</text>
+  <text x="24" y="288" fill="#fbbf24" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">  Normal   Pulling  18s   kubelet  Pulling image &quot;nginx:this-image-does-not-exist&quot;</text>
+  <text x="24" y="312" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">  Warning  Failed   17s   kubelet  Failed to pull image: rpc error: code = NotFound (not found)</text>
+  <text x="24" y="336" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">  Warning  Failed   17s   kubelet  Error: ErrImagePull</text>
+  <text x="24" y="360" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal"># Root Cause: Container image tag does not exist in registry</text>
+  <text x="24" y="384" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl replace --force -f 07-imagepullbackoff/fixed-pod.yaml -n k8s-troubleshoot</text>
+  <text x="24" y="408" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod &quot;image-demo&quot; deleted</text>
+  <text x="24" y="432" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/image-demo replaced</text>
+  <text x="24" y="456" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl get pod image-demo -n k8s-troubleshoot</text>
+  <text x="24" y="480" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME         READY   STATUS    RESTARTS   AGE</text>
+  <text x="24" y="504" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">image-demo   1/1     Running   0          4s</text>
+</svg>

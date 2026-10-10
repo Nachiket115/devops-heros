@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="508" viewBox="0 0 1100 508">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1100" height="508" rx="14" fill="url(#bg)" stroke="#334155" stroke-width="1.5"/>
+  <rect x="0" y="0" width="1100" height="42" rx="14" fill="#1e293b"/>
+  <circle cx="24" cy="21" r="6" fill="#ef4444"/>
+  <circle cx="44" cy="21" r="6" fill="#f59e0b"/>
+  <circle cx="64" cy="21" r="6" fill="#10b981"/>
+  <text x="90" y="26" fill="#94a3b8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" font-weight="600">mini-project ~ Troubleshooting Challenge End-to-End Verification</text>
+  <text x="24" y="72" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl apply -f mini-project/deployment.yaml -f mini-project/service.yaml -n session14-mini-project</text>
+  <text x="24" y="96" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">deployment.apps/troubleshooting-app created</text>
+  <text x="24" y="120" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">service/troubleshooting-service created</text>
+  <text x="24" y="144" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl get pods,svc,ep -n session14-mini-project -o wide</text>
+  <text x="24" y="168" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME                                       READY   STATUS    RESTARTS   AGE   IP            NODE</text>
+  <text x="24" y="192" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/troubleshooting-app-59d4957864-g9bgm   1/1     Running   0          53s   10.244.0.35   minikube</text>
+  <text x="24" y="216" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/troubleshooting-app-59d4957864-p5bv9   1/1     Running   0          53s   10.244.0.34   minikube</text>
+  <text x="24" y="240" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME                              TYPE        CLUSTER-IP       PORT(S)   AGE</text>
+  <text x="24" y="264" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">service/troubleshooting-service   ClusterIP   10.104.173.241   80/TCP    53s</text>
+  <text x="24" y="288" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME                              ENDPOINTS                       AGE</text>
+  <text x="24" y="312" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">endpoints/troubleshooting-service 10.244.0.34:80,10.244.0.35:80   53s</text>
+  <text x="24" y="336" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl apply -f mini-project/broken-pod.yaml -n session14-mini-project</text>
+  <text x="24" y="360" fill="#f87171" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">pod/project-broken-pod: ImagePullBackOff (docker.io/library/nginx:this-tag-does-not-exist: not found)</text>
+  <text x="24" y="384" fill="#64748b" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal"># Fix: Replaced image with nginx:1.27 and added label app=troubleshooting-app</text>
+  <text x="24" y="408" fill="#38bdf8" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="bold">$ kubectl get endpoints troubleshooting-service -n session14-mini-project</text>
+  <text x="24" y="432" fill="#cbd5e1" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">NAME                      ENDPOINTS                                      AGE</text>
+  <text x="24" y="456" fill="#34d399" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13.5" font-weight="normal">troubleshooting-service   10.244.0.34:80,10.244.0.35:80,10.244.0.36:80   80s</text>
+</svg>
