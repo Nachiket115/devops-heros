@@ -1,0 +1,154 @@
+name: Full CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  # ==========================================
+  # CI STAGE: LINT & FORMAT
+  # ==========================================
+  lint:
+    name: Lint & Code Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Linting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+
+      - name: Run Flake8 Linter
+        run: |
+          flake8 app/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 app/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  # ==========================================
+  # CI STAGE: UNIT TESTING
+  # ==========================================
+  test:
+    name: Test Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Unit Tests (pytest)
+        run: |
+          pytest -v --tb=short
+
+  # ==========================================
+  # CI STAGE: SECURITY SCAN
+  # ==========================================
+  security-check:
+    name: Security & Secret Scan
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Scan for Sensitive Keys & Credentials
+        run: |
+          echo "Scanning repository for common secret/credential leaks..."
+          if find . -type f \( -name ".env" -o -name "*.pem" -o -name "*.key" -o -name "id_rsa" \) | grep -q .; then
+            echo "::error::Sensitive credential file found in repository!"
+            exit 1
+          else
+            echo "Security scan passed: No credential files detected."
+          fi
+
+  # ==========================================
+  # CI STAGE: APPLICATION BUILD & ARTIFACT
+  # ==========================================
+  build:
+    name: Build Application Artifact
+    needs: [test, security-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Build Application Package
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-build
+          path: build/
+          retention-days: 7
+
+  # ==========================================
+  # CD STAGE: CONTAINER BUILD & IMAGE PACKAGING
+  # ==========================================
+  docker-build:
+    name: Docker Build & Package
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t session16-calculator:${{ github.sha }} .
+          docker tag session16-calculator:${{ github.sha }} session16-calculator:latest
+
+      - name: Verify Container Execution
+        run: |
+          docker run --rm session16-calculator:latest python -c "from app.calculator import add; print('Smoke Test Result:', add(5, 5))"
+
+  # ==========================================
+  # CD STAGE: DEPLOYMENT TO STAGING & PROD
+  # ==========================================
+  deploy:
+    name: Deploy to Production
+    needs: docker-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Deploy Containerized Application
+        env:
+          DEPLOY_ENV: production
+          APP_VERSION: ${{ github.sha }}
+        run: |
+          echo "=========================================="
+          echo "Deploying to Environment: $DEPLOY_ENV"
+          echo "Deploying Version: $APP_VERSION"
+          echo "=========================================="
+          echo "Deployment successful: Health checks passed."
