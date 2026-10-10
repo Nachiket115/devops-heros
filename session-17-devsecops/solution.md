@@ -379,16 +379,16 @@ spec:
 ## 7. Execution Screenshots & Verification Proofs
 
 ### Pipeline Execution Summary
-![Pipeline Execution](file:///Users/nachiketr/SST28-DevOps/devops-heros/session-17-devsecops/screenshots/pipeline_execution.png)
+![Pipeline Execution](./screenshots/pipeline_execution.png)
 
 ### Security Scans Output (SAST, SCA, Secret Scan, Trivy)
-![Security Scans](file:///Users/nachiketr/SST28-DevOps/devops-heros/session-17-devsecops/screenshots/security_scans_terminal.png)
+![Security Scans](./screenshots/security_scans_terminal.png)
 
 ### Kubernetes Cluster Deployment & Rollout Verification
-![Kubernetes Deployment](file:///Users/nachiketr/SST28-DevOps/devops-heros/session-17-devsecops/screenshots/k8s_deployment_rollout.png)
+![Kubernetes Deployment](./screenshots/k8s_deployment_rollout.png)
 
 ### Application Web Dashboard & Health Endpoint
-![App Dashboard](file:///Users/nachiketr/SST28-DevOps/devops-heros/session-17-devsecops/screenshots/app_dashboard.png)
+![App Dashboard](./screenshots/app_dashboard.png)
 
 ---
 
